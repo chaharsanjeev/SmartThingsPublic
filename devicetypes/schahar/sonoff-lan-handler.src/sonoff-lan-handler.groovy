@@ -1,6 +1,5 @@
 metadata {
 
-
 	definition (name: "SOnOff LAN Handler", namespace: "SCHAHAR", author: "Sanjeev Chahar", ocfDeviceType: "oic.d.smartplug",executeCommandsLocally: true) {
 		capability "Actuator"
 		capability "Health Check"
