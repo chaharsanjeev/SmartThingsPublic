@@ -166,7 +166,9 @@ void calledBackHandler(physicalgraph.device.HubResponse hubResponse) {
 
 def setupHealthCheck() {
 	try{
-	    showDeviceSettings() //Show if device is enabled or not on the tile
+	    if (SONOFF_enableDebug == true){log.debug "[Device name: $device]: Invoked 'setupHealthCheck'"}
+        
+        showDeviceSettings() //Show if device is enabled or not on the tile
  		
         unschedule()
 		
