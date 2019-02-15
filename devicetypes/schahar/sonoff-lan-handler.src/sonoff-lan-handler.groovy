@@ -195,7 +195,7 @@ def setupHealthCheck() {
 
                 runIn(2, refresh)
                 
-        }//end if - SONOFF_enableDevice != true
+        }else{ log.debug "222"}//end if - SONOFF_enableDevice != true
  	
     } catch(Exception ex) {
     	log.error "[Device name: $device]: Function:setupHealthCheck() Exception: " + ex
