@@ -9,7 +9,7 @@ metadata {
  	} //End defination
 
 	tiles(scale: 2) {
-		// TODO: define your main and details tiles here
+		// TODO: define your main and details tiles here - define
         standardTile("switch", "device.switch", width: 6, height: 5, decoration: "flat",canChangeIcon: true,canChangeBackground:flase) {
     		state "off", label:'Off', action:"switch.on", icon:"st.switches.switch.off", backgroundColor:"#fff", nextState:"turningOn" //white color
     		state "on", label:'On', action:"switch.off", icon:"st.switches.switch.on", backgroundColor:"#44b621", nextState:"turningOff" //green color
