@@ -62,7 +62,7 @@ private def sendCommand(String command) {
     	if ((SONOFF_enableDevice != true) && (command != 'status')){ return}
     
     	def logPrefix = "[Device name: $device]: "
-		state.RESPONSE_RECEIVED = false
+		
 	
 		if (SONOFF_enableDebug == true){log.debug "$logPrefix sendCommand(${command}) to device at $SONOFF_ipAddress:$SONOFF_port"}
  
@@ -92,6 +92,7 @@ private def sendCommand(String command) {
 
 		path += "&user=${SONOFF_username}&password=${SONOFF_password}"
     	
+        state.RESPONSE_RECEIVED = false //Default response_received to false and later update this flag
         runIn(7, "response_check") //7 seconds
     	sendHubCommand(new physicalgraph.device.HubAction("""GET $path HTTP/1.1\r\nHOST: $ip\r\n\r\n""", physicalgraph.device.Protocol.LAN, myMAC, [callback: calledBackHandler]))
 	
@@ -106,6 +107,7 @@ def response_check (){
     try{
         if (state.RESPONSE_RECEIVED == true){
             if (SONOFF_enableDebug == true){log.debug "[Device name: $device]: Response received from SonOff device, process response message"}
+            setDeviceHealthStatus('online')
         }else{
             if (SONOFF_enableDebug == true){log.error "[Device name: $device]: NO response received from SonOff, Set device status offline"}
             setDeviceHealthStatus('offline')
@@ -174,9 +176,8 @@ def setupHealthCheck() {
 		
         //Schedule only if device is enabled
         if (SONOFF_enableDevice == true){
-                log.debug "111"
-        		def ref_rate = Integer.valueOf(SONOFF_REFRESH_RATE.substring(0, SONOFF_REFRESH_RATE.lastIndexOf(" ")).trim())
-                 log.debug "111 : " + ref_rate
+          		def ref_rate = Integer.valueOf(SONOFF_REFRESH_RATE.substring(0, SONOFF_REFRESH_RATE.lastIndexOf(" ")).trim())
+            
         		if (ref_rate == 1){
                     runEvery1Minute(refresh)
                 }else if (ref_rate == 5){
@@ -195,7 +196,7 @@ def setupHealthCheck() {
 
                 //runIn(2, refresh)
                 
-        }else{ log.debug "222"}//end if - SONOFF_enableDevice == true
+        }//end if - SONOFF_enableDevice == true
  	
     } catch(Exception ex) {
     	log.error "[Device name: $device]: Function:setupHealthCheck() Exception: " + ex
@@ -263,23 +264,47 @@ def setSwitchState(Boolean on) {
 def setDeviceHealthStatus(String statusValue){
 	//Value: offline/online
     
+    
+
     try{
         // Gets the most recent State for device
         def currentDeviceState = device.currentState("switch")
 
         //If device is offline, flip the button status to original value
-        if ( statusValue == "offline"){
-            if (currentDeviceState.value == "off"){
-                setSwitchState(false)
-            }else if (currentDeviceState.value == "on"){
-                setSwitchState(true)
-            } //End if - currentDeviceState
-        }//End if - statusValue
+        //if ( statusValue == "offline"){
+        //    if (currentDeviceState.value == "off"){
+        //        setSwitchState(false)
+        //    }else if (currentDeviceState.value == "on"){
+        //        setSwitchState(true)
+        //    } //End if - currentDeviceState
+        //}//End if - statusValue
 
-        sendEvent(name: "DeviceWatch-DeviceStatus", value: statusValue)
-        sendEvent(name: "healthStatus", value: statusValue)
-        sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "lan", scheme:"untracked"].encodeAsJson(), displayed: true)
-	
+        Boolean updateDevice = false
+
+        if (state.DEVICE_HELTH_STATUS?.trim()) {
+                //state variable is having the value, so continue
+                //if device new online status is same as existing status, don't do anything - skip else update device inline status
+                if (state.DEVICE_HELTH_STATUS != statusValue){
+                    if (SONOFF_enableDebug == true){log.debug "[Device name: $device]: Device health status changed to $statusValue" }
+                    updateDevice = true    
+                }//end if 
+            }else{
+                //state vaiable is empty, so initilize it
+                if (SONOFF_enableDebug == true){log.debug "[Device name: $device]: state.DEVICE_HELTH_STATUS is empty, assign value" }
+                updateDevice = true    
+        }//end if 
+
+
+        if(updateDevice){
+            state.DEVICE_HELTH_STATUS = statusValue //set Device state variable with current device status value
+            sendEvent(name: "DeviceWatch-DeviceStatus", value: statusValue)
+            sendEvent(name: "healthStatus", value: statusValue)
+            sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "lan", scheme:"untracked"].encodeAsJson(), displayed: true)
+        }//end if 
+
+
+
+
     } catch(Exception ex) {
     	log.error "[Device name: $device]: Function:setDeviceHealthStatus() Exception: " + ex
     }//End catch
