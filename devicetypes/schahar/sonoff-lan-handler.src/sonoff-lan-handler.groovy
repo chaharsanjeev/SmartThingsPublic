@@ -58,7 +58,7 @@ private def sendCommand(String command) {
     try{
     	  showDeviceSettings()
     	
-    	//if Device is disabled or command is not refresh - stop
+    	//if Device is disabled or command is not refresh - stop, no point to refresh or get device status
     	if ((SONOFF_enableDevice != true) && (command != 'status')){ return}
     
     	def logPrefix = "[Device name: $device]: "
@@ -173,7 +173,7 @@ def setupHealthCheck() {
         unschedule()
 		
         //Schedule only if device is enabled
-        if (SONOFF_enableDevice != true){
+        if (SONOFF_enableDevice == true){
                 log.debug "111"
         		def ref_rate = Integer.valueOf(SONOFF_REFRESH_RATE.substring(0, SONOFF_REFRESH_RATE.lastIndexOf(" ")).trim())
                  log.debug "111 : " + ref_rate
@@ -193,9 +193,9 @@ def setupHealthCheck() {
                     runEvery1Minute(refresh) //default
                 } //End if
 
-                runIn(2, refresh)
+                //runIn(2, refresh)
                 
-        }else{ log.debug "222"}//end if - SONOFF_enableDevice != true
+        }else{ log.debug "222"}//end if - SONOFF_enableDevice == true
  	
     } catch(Exception ex) {
     	log.error "[Device name: $device]: Function:setupHealthCheck() Exception: " + ex
