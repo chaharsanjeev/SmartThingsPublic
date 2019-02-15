@@ -174,8 +174,9 @@ def setupHealthCheck() {
 		
         //Schedule only if device is enabled
         if (SONOFF_enableDevice != true){
+                log.debug "111"
         		def ref_rate = Integer.valueOf(SONOFF_REFRESH_RATE.substring(0, SONOFF_REFRESH_RATE.lastIndexOf(" ")).trim())
-                
+                 log.debug "111 : " + ref_rate
         		if (ref_rate == 1){
                     runEvery1Minute(refresh)
                 }else if (ref_rate == 5){
