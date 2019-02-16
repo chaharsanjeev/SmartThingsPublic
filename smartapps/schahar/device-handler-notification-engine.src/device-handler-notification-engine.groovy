@@ -12,7 +12,7 @@
  
 definition(
 		name: "Device Handler Notification Engine",
-		namespace: "schahar",
+		namespace: "SCHAHAR",
 		author: "Sanjeev Chahar",
 		description: "Receive notifications from Device Handler and display these notifications on the device",
 		category: "Convenience",
