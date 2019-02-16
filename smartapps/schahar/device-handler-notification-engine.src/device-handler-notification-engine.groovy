@@ -13,7 +13,7 @@
 definition(
 		name: "Device Handler Notification Engine",
 		namespace: "SCHAHAR",
-		author: "Sanjeev Chahar",
+		author: "SanjeevChahar",
 		description: "Receive notifications from Device Handler and display these notifications on the device",
 		category: "Convenience",
 		iconUrl: "https://s3.amazonaws.com/smartapp-icons/Meta/window_contact.png",
